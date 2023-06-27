@@ -18,9 +18,7 @@ Follow the steps below to install and run the script:
 
 Clone the repository to your local machine using git.
 
-`git clone https://github.com/username/repository.git` 
-
-_Replace `username` and `repository` with the appropriate GitHub username and repository name._
+`git clone https://github.com/nniinima/HCR2Reader.git` 
 
 ### Step 2: Install Required Python Libraries
 
