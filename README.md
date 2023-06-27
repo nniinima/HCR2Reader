@@ -42,7 +42,7 @@ To run the script, navigate to the repository directory and run:
 
 `python HCR2Reader.py` 
 
-This will process all PNG images in the same directory as the script, and print the resulting data to the console. You can modify the script to process images from different locations or to output the data in a different way.
+This will process all PNG images in the same directory as the script, and print the resulting data to a csv file. You can modify the script to process images from different locations or to output the data in a different way.
 
 ## Contributing
 
