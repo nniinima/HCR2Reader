@@ -1,6 +1,6 @@
 # OCR Image Processing Script for HCR2
 
-This script performs Optical Character Recognition (OCR) on PNG images, processes them, and outputs information in a sorted list.
+This script performs Optical Character Recognition (OCR) on PNG images, processes them, and outputs information in a sorted csv.
 
 ## Prerequisites
 
