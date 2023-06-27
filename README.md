@@ -1,4 +1,4 @@
-# OCR Image Processing Script for HRC2
+# OCR Image Processing Script for HCR2
 
 This script performs Optical Character Recognition (OCR) on PNG images, processes them, and outputs information in a sorted list.
 
@@ -40,7 +40,7 @@ On Windows, you can also define the tesseract path in your script like so:
 
 To run the script, navigate to the repository directory and run:
 
-`python HRC2Reader.py` 
+`python HCR2Reader.py` 
 
 This will process all PNG images in the same directory as the script, and print the resulting data to the console. You can modify the script to process images from different locations or to output the data in a different way.
 
