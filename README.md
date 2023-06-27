@@ -48,7 +48,7 @@ To run the script, navigate to the repository directory and run:
 
 bashCopy code
 
-`python main.py` 
+`python HRC2Reader.py` 
 
 This will process all PNG images in the same directory as the script, and print the resulting data to the console. You can modify the script to process images from different locations or to output the data in a different way.
 
