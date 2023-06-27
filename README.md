@@ -18,8 +18,6 @@ Follow the steps below to install and run the script:
 
 Clone the repository to your local machine using git.
 
-bashCopy code
-
 `git clone https://github.com/username/repository.git` 
 
 _Replace `username` and `repository` with the appropriate GitHub username and repository name._
@@ -27,8 +25,6 @@ _Replace `username` and `repository` with the appropriate GitHub username and re
 ### Step 2: Install Required Python Libraries
 
 Navigate to the cloned repository and install the required Python libraries by running the following command:
-
-bashCopy code
 
 `pip install -r requirements.txt` 
 
@@ -38,15 +34,11 @@ This script also requires **Tesseract OCR** to function. Download and install it
 
 On Windows, you can also define the tesseract path in your script like so:
 
-pythonCopy code
-
 `pytesseract.pytesseract.tesseract_cmd = 'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'` 
 
 ## Running the Script
 
 To run the script, navigate to the repository directory and run:
-
-bashCopy code
 
 `python HRC2Reader.py` 
 
