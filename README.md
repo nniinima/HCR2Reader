@@ -47,3 +47,7 @@ This will process all PNG images in the same directory as the script, and print 
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+## Early Proof of Concept
+
+The script does not currenlty work without specific demands. The images have to be of team events and in correct order for the script to do its job amicably. The images must be in PNG format, and taken as a screenshot with a device with 2160 x 1620 resolution. These shortcomings will be patched up, or you can patch them up yourself. This is very much a work in rogress and not a finished system.
