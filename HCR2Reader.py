@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import pytesseract
 from skimage import io
 from skimage.color import rgb2hsv
+import pandas as pd
 
 # Get the current directory
 directory = os.getcwd()
@@ -234,3 +235,29 @@ for i, result in enumerate(results):
 # Print the sorted array of objects
 for result in results:
     print(result)
+
+# Create a DataFrame from results
+df = pd.DataFrame(results)
+
+# Count the number of non-null entries in each column
+num_colors = df['color'].count()
+num_players = df['player'].count()
+num_points = df['points'].count()
+
+# Check if the counts are equal
+if num_colors == num_players == num_points:
+    print(f'Found {num_colors} records each for colors, players, and points. The number of records match.')
+else:
+    print(f'Warning: The number of records do not match. Found {num_colors} color records, {num_players} player records, and {num_points} points records. There has been an issue reading the data and the result may be off.')
+
+# Export to CSV
+df.to_csv("output.csv", index=False)
+
+# Define the column order
+column_order = ['player', 'position', 'points', 'score', 'color']
+
+# Reorder the columns
+df = df[column_order]
+
+# Export to CSV
+df.to_csv("output.csv", index=False)
