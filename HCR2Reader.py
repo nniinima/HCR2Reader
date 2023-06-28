@@ -7,19 +7,33 @@ import matplotlib.pyplot as plt
 import pytesseract
 from skimage import io
 from skimage.color import rgb2hsv
+from skimage.transform import resize
+from skimage.color import rgba2rgb
 import pandas as pd
 
 
 def process_images(png_file):
     results = []
 
-    # Get score mapping
-    score_mapping = get_score_mapping()
+    # Get the image's aspect ratio
+    original_img = Image.open(png_file)
+    width, height = original_img.size
+    aspect_ratio = width / height
 
-    # Iterate over the PNG files in the directory
-    print(f"Processing file {png_file}")
-    # Read the original image
-    img_rgb = io.imread(png_file)
+    # Check if the aspect ratio is within 1% tolerance of 4:3
+    if 0.99 * (4/3) <= aspect_ratio <= 1.01 * (4/3):
+        print(f"Resizing image {png_file}")
+        # Resize the image
+        img_rgba = resize(io.imread(png_file), (1620, 2160), mode='reflect', preserve_range=True).astype('uint8')
+
+        # If the image has 4 channels (i.e., it's in RGBA format), convert to RGB
+        if img_rgba.shape[2] == 4:
+            img_rgb = (rgba2rgb(img_rgba) * 255).astype(np.uint8)
+        else:
+            img_rgb = img_rgba
+    else:
+        print(f"Discarding image {png_file}")
+        return None  # Return None if the image is discarded
 
     # Convert the image to a NumPy array
     data = np.array(img_rgb)
@@ -60,6 +74,21 @@ def process_images(png_file):
 
     # Convert back to image
     preprocessed_img = Image.fromarray(data)
+
+    # Display the preprocessed image with grid overlay
+    plt.imshow(preprocessed_img)
+
+    # Add grid overlay
+    grid_interval = 50
+    plt.grid(color='white', linewidth=0.5, linestyle='--')
+    plt.xticks(np.arange(0, preprocessed_img.width, grid_interval))
+    plt.yticks(np.arange(0, preprocessed_img.height, grid_interval))
+
+    # Hide axis labels
+    plt.axis('off')
+
+    # Show the plot
+    plt.show()
 
     # Set tesseract path for Windows
     pytesseract.pytesseract.tesseract_cmd = 'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
