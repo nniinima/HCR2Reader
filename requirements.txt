@@ -6,3 +6,4 @@ pytesseract
 Pillow
 scikit-image
 tk
+lxml
