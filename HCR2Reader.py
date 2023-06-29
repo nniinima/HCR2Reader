@@ -31,6 +31,71 @@ def process_images(png_file):
             img_rgb = (rgba2rgb(img_rgba) * 255).astype(np.uint8)
         else:
             img_rgb = img_rgba
+
+        another_roi_px = (500, 400, 1000)
+        x_start1, y_start1 = 500, 550
+        x_end1, y_end1 = 1350, 1250
+        rect_data_1 = (400, 1400, 450, 545, 175, 250)
+        rect_data_2 = (390, 545)
+        rect_data_3 = (1000, 1150)
+        rect_data_4 = (440, 1440)
+        team1_roi_crop = (0, 200, 1000, 400)
+        team2_roi_crop = (1000, 200, 400)
+        score_roi_crop = (100, 400, 300)
+        player_roi_crop = (500, 400, 1000)
+        points_roi_crop = (1180, 545, 1360, 1230)
+        letter_dist_check = 40
+        color_search_dist = 320
+    elif 0.99 * (16/9) <= aspect_ratio <= 1.01 * (16/9):
+        print(f"Resizing image {png_file}")
+        # Resize the image
+        img_rgba = resize(io.imread(png_file), (1080, 1920), mode='reflect', preserve_range=True).astype('uint8')
+
+        # If the image has 4 channels (i.e., it's in RGBA format), convert to RGB
+        if img_rgba.shape[2] == 4:
+            img_rgb = (rgba2rgb(img_rgba) * 255).astype(np.uint8)
+        else:
+            img_rgb = img_rgba
+
+        another_roi_px = (500, 400, 1000)
+        x_start1, y_start1 = 500, 550
+        x_end1, y_end1 = 1350, 1250
+        rect_data_1 = (750, 605, 260, 570, 175, 250)
+        rect_data_2 = (390, 545)
+        rect_data_3 = (925, 1025)
+        rect_data_4 = (260, 1200)
+        team1_roi_crop = (0, 200, 1000, 400)
+        team2_roi_crop = (1000, 200, 400)
+        score_roi_crop = (100, 400, 300)
+        player_roi_crop = (500, 400, 1000)
+        points_roi_crop = (1180, 545, 1360, 1230)
+        letter_dist_check = 40
+        color_search_dist = 320
+    elif 0.99 * (20/9) <= aspect_ratio <= 1.01 * (20/9):
+        print(f"Resizing image {png_file}")
+        # Resize the image
+        img_rgba = resize(io.imread(png_file), (864, 1920), mode='reflect', preserve_range=True).astype('uint8')
+
+        # If the image has 4 channels (i.e., it's in RGBA format), convert to RGB
+        if img_rgba.shape[2] == 4:
+            img_rgb = (rgba2rgb(img_rgba) * 255).astype(np.uint8)
+        else:
+            img_rgb = img_rgba
+
+        another_roi_px = (500, 400, 1000)
+        x_start1, y_start1 = 605, 260
+        x_end1, y_end1 = 1150, 740
+        rect_data_1 = (250, 750, 560, 605, 330, 70)
+        rect_data_2 = (150, 260)
+        rect_data_3 = (925, 1025)
+        rect_data_4 = (260, 1200)
+        team1_roi_crop = (330, 45, 950, 170)
+        team2_roi_crop = (950, 45, 170)
+        score_roi_crop = (100, 400, 300)
+        player_roi_crop = (600, 250, 930)
+        points_roi_crop = (1020, 250, 1170, 710)
+        letter_dist_check = 40
+        color_search_dist = 320
     else:
         print(f"Discarding image {png_file}")
         return None  # Return None if the image is discarded
@@ -39,7 +104,7 @@ def process_images(png_file):
     data = np.array(img_rgb)
 
     # Crop another version of the image
-    another_roi = Image.fromarray(img_rgb).crop((500, 400, 1000, Image.fromarray(img_rgb).height))
+    another_roi = Image.fromarray(img_rgb).crop((another_roi_px[0], another_roi_px[1], another_roi_px[2], Image.fromarray(img_rgb).height))
     another_img_to_plot = np.array(another_roi)
 
     # Apply color thresholding
@@ -51,8 +116,8 @@ def process_images(png_file):
     tolerance = 0.02  # 2% tolerance
 
     # Check if the color within the specified rectangle is within tolerance of the target color
-    x_start, y_start = 500, 550
-    x_end, y_end = 1350, 1250
+    x_start, y_start = x_start1, y_start1
+    x_end, y_end = x_end1, y_end1
     target_pixels = data[y_start:y_end, x_start:x_end]
     reshaped_target_color = np.tile(target_color, (target_pixels.shape[0], target_pixels.shape[1], 1))
     distances = np.linalg.norm(target_pixels - reshaped_target_color, axis=-1)
@@ -67,10 +132,10 @@ def process_images(png_file):
     data[~mask_white] = [255, 255, 255]
 
     # Apply white rectangles and other preprocessing steps
-    data[400:1400, 450:545] = data[:, :175] = data[:250, :] = [255, 255, 255]
-    data[390:545, :] = [255, 255, 255]
-    data[:, 1000:1150] = [255, 255, 255]
-    data[440:, 1440:] = [255, 255, 255]
+    data[rect_data_1[0]:rect_data_1[1], rect_data_1[2]:rect_data_1[3]] = data[:, :rect_data_1[4]] = data[:rect_data_1[5], :] = [255, 255, 255]
+    data[rect_data_2[0]:rect_data_2[1], :] = [255, 255, 255]
+    data[:, rect_data_3[0]:rect_data_3[1]] = [255, 255, 255]
+    data[rect_data_4[0]:, rect_data_4[1]:] = [255, 255, 255]
 
     # Convert back to image
     preprocessed_img = Image.fromarray(data)
@@ -88,17 +153,17 @@ def process_images(png_file):
     plt.axis('off')
 
     # Show the plot
-    plt.show()
+    # plt.show()
 
     # Set tesseract path for Windows
     pytesseract.pytesseract.tesseract_cmd = 'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
 
     # OCR on different regions of interest
-    team1_roi = preprocessed_img.crop((0, 200, 1000, 400))
-    team2_roi = preprocessed_img.crop((1000, 200, preprocessed_img.width, 400))
-    score_roi = preprocessed_img.crop((100, 400, 300, preprocessed_img.height))
-    player_roi = preprocessed_img.crop((500, 400, 1000, preprocessed_img.height))
-    points_roi = preprocessed_img.crop((1180, 545, 1360, 1230))
+    team1_roi = preprocessed_img.crop((team1_roi_crop[0], team1_roi_crop[1], team1_roi_crop[2], team1_roi_crop[3]))
+    team2_roi = preprocessed_img.crop((team2_roi_crop[0], team2_roi_crop[1], preprocessed_img.width, team2_roi_crop[2]))
+    score_roi = preprocessed_img.crop((score_roi_crop[0], score_roi_crop[1], score_roi_crop[2], preprocessed_img.height))
+    player_roi = preprocessed_img.crop((player_roi_crop[0], player_roi_crop[1], player_roi_crop[2], preprocessed_img.height))
+    points_roi = preprocessed_img.crop((points_roi_crop[0], points_roi_crop[1], points_roi_crop[2], points_roi_crop[3]))
 
     team1_text = pytesseract.image_to_string(team1_roi)
     team2_text = pytesseract.image_to_string(team2_roi)
@@ -111,7 +176,24 @@ def process_images(png_file):
     team2_text = '\n'.join(line for line in team2_text.splitlines() if line.strip())
     score_text = '\n'.join(line for line in score_text.splitlines() if line.strip())
     player_text = '\n'.join(line for line in player_text.splitlines() if line.strip())
-    points_text = '\n'.join(line for line in points_text.splitlines() if line.strip())
+
+    # Split both texts into lines
+    player_lines = player_text.splitlines()
+    points_lines = points_text.splitlines()
+
+    # Remove empty lines
+    player_lines = [line for line in player_lines if line.strip()]
+    points_lines = [line for line in points_lines if line.strip()]
+
+    # If points_lines has fewer lines than player_lines, add "0"s
+    if len(points_lines) < len(player_lines):
+        points_lines.extend("0" for _ in range(len(player_lines) - len(points_lines)))
+
+    # Join points_lines back into a text
+    points_text = '\n'.join(points_lines)
+
+    print(player_text)
+    print(points_text)
 
     # Initialize a list to store the color objects
     colors = []
@@ -131,11 +213,28 @@ def process_images(png_file):
         y1, y2 = image_height - y1, image_height - y2
 
         # Check if it's the first letter of the line or at least 40 pixels below the previous letter
-        if prev_y2 is None or y1 - prev_y2 >= 40:
-            # Check the color 300 pixels to the right of the first letter on each line
-            search_x = x2 + 320
+        if prev_y2 is None or y1 - prev_y2 >= letter_dist_check:
+            # Check the color to the right of the first letter on each line
+            search_x = x2 + color_search_dist
             search_y = (y1 + y2) // 2  # Use the vertical center of the letter
-            search_color = another_roi.getpixel((search_x, search_y))
+            search_distance = color_search_dist
+            search_decrement = 50  # decrement step
+
+            while search_distance > 0:
+                try:
+                    search_color = another_roi.getpixel((search_x, search_y))
+                    # if the line above is successful, break the loop
+                    break
+                except IndexError:
+                    # if IndexError occurs, reduce the search distance
+                    search_distance -= search_decrement
+                    search_x -= search_decrement 
+                    continue
+
+            # if we've exhausted the search and still have an IndexError
+            if search_distance <= 0:
+                search_color = 'unknown'  # assign color as unknown
+
 
             # Convert the RGB color tuple to HSV color
             hsv_color = rgb2hsv(np.array(search_color) / 255.0)
@@ -159,12 +258,15 @@ def process_images(png_file):
         prev_y2 = search_y
 
     # Split the results by line and create an array of objects
+
     lines = max(len(score_text.splitlines()), len(points_text.splitlines()))
+    while len(colors) < lines:
+        colors.append('unknown')
     for i in range(lines):
-        score = ""  # Placeholder for now
+        score = 0  # Placeholder for now
         position = 0  # Placeholder for now
         player = player_text.splitlines()[i] if i < len(player_text.splitlines()) else ""
-        points = points_text.splitlines()[i] if i < len(points_text.splitlines()) else ""
+        points = points_text.splitlines()[i] if i < len(points_text.splitlines()) else 0
         color = colors[i]
         result = {
             "score": score,

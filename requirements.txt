@@ -7,3 +7,4 @@ Pillow
 scikit-image
 tk
 lxml
+Jinja2

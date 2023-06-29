@@ -48,13 +48,79 @@ class Application(tk.Frame):
             processed_df = process_images(image_file)
             self.df = pd.concat([self.df, processed_df], ignore_index=True)
 
-        self.df = self.df.sort_values(by=['points'], ascending=False)
-        self.df['position'] = range(1, len(self.df) + 1)
-        score_mapping = get_score_mapping()
-        self.df['score'] = self.df['position'].map(score_mapping).fillna(0)
+        if not self.df.empty:
+            # Define a dictionary of replacements
+            replacements = {
+                's': '5', 
+                'S': '5', 
+                'g': '9', 
+                'H': '4', 
+                'i': '1', 
+                'I': '1', 
+                'l': '1', 
+                'j': '1', 
+                'z': '2', 
+                'Z': '2'
+            }
 
+            # Make the replacements
+            for character, replacement in replacements.items():
+                self.df['points'] = self.df['points'].str.replace(character, replacement, regex=False)
+
+            # Convert to numeric
+            self.df['points'] = pd.to_numeric(self.df['points'], errors='coerce')
+            self.df['points'].fillna(0, inplace=True)
+
+            # Add a column for expected position (index + 1)
+            self.df['expected_position'] = self.df.index + 1
+
+            # Calculate the mean of scores above 4000
+            mean_score = self.df.loc[self.df['points'] > 4000, 'points'].mean()
+            print(f"Mean score: {mean_score}")  # Debugging statement
+
+            # Sort by points
+            self.df = self.df.sort_values(by=['points'], ascending=False)
+
+            # Add a column for expected position (index + 1)
+            self.df['expected_position'] = self.df.index + 1
+
+            # Create a condition for where the points is much higher than the mean
+            condition_high_score = (self.df['points'] > 2 * mean_score)
+
+            # Create a condition for where the position differs significantly from the index
+            condition_wrong_position = (abs(self.df.reset_index().index + 1 - self.df['expected_position']) > 1)
+
+            # Where both conditions are met, set the points to 333
+            self.df.loc[condition_high_score & condition_wrong_position, 'points'] = 333
+
+            # Recalculate position and score
+            self.df['position'] = range(1, len(self.df) + 1)
+            score_mapping = get_score_mapping()
+            self.df['score'] = self.df['position'].map(score_mapping).fillna(0)
+
+        def custom_sort(df):
+            df = df.copy()
+            df['original_index'] = df.index
+            # get the original index of the player to be moved
+            moved_player_index = df[df['points'] == 333]['original_index'].values[0]
+            # increment the position of the players that are above or equal to the moved player
+            df.loc[df['original_index'] <= moved_player_index, 'position'] += 1
+            # set the position of the moved player
+            df.loc[df['points'] == 333, 'position'] = df.loc[df['points'] == 333, 'expected_position']
+            df.sort_values(['position', 'original_index'], inplace=True)
+            df['position'] = range(1, len(df) + 1)
+            score_mapping = get_score_mapping()
+            df['score'] = df['position'].map(score_mapping).fillna(0)
+
+            # Drop the helper columns
+            df.drop(['expected_position', 'original_index'], axis=1, inplace=True)
+            return df
+
+        self.df = custom_sort(self.df)
         self.progress_text.set("Done processing images!")
         self.save_button["state"] = tk.NORMAL
+
+    # Apply the custom sort to your dataframe
 
     def save_data(self):
         if self.df is not None:
